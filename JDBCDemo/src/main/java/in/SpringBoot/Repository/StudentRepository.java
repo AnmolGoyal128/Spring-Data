@@ -9,15 +9,18 @@ public class StudentRepository {
     String username = "root";
     String password = "anmol@128";
 
-    public void createUser(){
+    public void createUser(Student student) {
         try {
 
         Connection connection = DriverManager.getConnection(url, username, password);
 
         Statement statement = connection.createStatement();
 
-            String sql = "Insert INTO students(name, email, age) " +
-                    "VALUES ('Anmol', 'an@gmail.com', 19)";
+            String sql = """
+                    INSERT INTO students(name, email, age)
+                    VALUES ('%s', '%d', '%s')
+                    """.formatted(student.getName(), student.getAge(),
+                    student.getEmail());
 
         int result = statement.executeUpdate(sql);
 
@@ -133,7 +136,7 @@ public class StudentRepository {
         return student;
     }
 
-    public void CompleteCrud(){
+    public void CompleteCrud() {
         try {
 
             Connection connection = DriverManager.getConnection(url, username, password);
@@ -144,17 +147,17 @@ public class StudentRepository {
 
             boolean result = statement.execute(sql);
 
-            if(result){
-            ResultSet resultSet = statement.getResultSet();
-            }else{
+            if (result) {
+                ResultSet resultSet = statement.getResultSet();
+            } else {
                 int rowAffected = statement.getUpdateCount();
             }
             connection.close();
-        }catch (SQLException ex) {
-        System.out.println("Database connection failed");
-        ex.printStackTrace();
+        } catch (SQLException ex) {
+            System.out.println("Database connection failed");
+            ex.printStackTrace();
 
+        }
     }
-
 }
 
