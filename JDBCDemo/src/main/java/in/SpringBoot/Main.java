@@ -1,6 +1,7 @@
 package in.SpringBoot;
 
 import in.SpringBoot.Repository.StudentRepository;
+import in.SpringBoot.model.Student;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,15 +11,17 @@ public class Main {
     static void main() {
         System.out.println("Hello World");
 
-        StudentRepository studentRepository = new StudentRepository();
+       StudentRepository studentRepository = new StudentRepository();
 
-        //studentRepository.createUser();
+        //studentRepository.createUser(new Student("Rohan", "anmoll@gmail.com", 19));
 
-        //studentRepository.updateUser();
+        //studentRepository.updateUser(new Student("ROhan", "Rohit@gmail.com", 23), 4L);
 
-        //studentRepository.deleteUser();
+        //studentRepository.deleteUser(2L);
 
-        studentRepository.getUserById();
+        //studentRepository.getUserById(5L);
+
+        studentRepository.getAllUsers();
 
 
     }

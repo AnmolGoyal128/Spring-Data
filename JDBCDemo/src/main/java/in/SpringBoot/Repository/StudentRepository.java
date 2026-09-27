@@ -3,34 +3,49 @@ package in.SpringBoot.Repository;
 import in.SpringBoot.model.Student;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class StudentRepository {
     String url = "jdbc:mysql://localhost:3306/student_db";
     String username = "root";
     String password = "anmol@128";
 
-    public void createUser(Student student) {
-        try {
 
-        Connection connection = DriverManager.getConnection(url, username, password);
-
-        Statement statement = connection.createStatement();
-
-            String sql = """
+    String sql = """
                     INSERT INTO students(name, email, age)
-                    VALUES ('%s', '%d', '%s')
-                    """.formatted(student.getName(), student.getAge(),
-                    student.getEmail());
+                    VALUES (?, ?, ?)
+                    """;
 
-        int result = statement.executeUpdate(sql);
+    public void createUser(Student student) {
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
 
-        if (result == 1) {
-            System.out.println("Create Connection successful");
+        //Statement statement = connection.createStatement();
+        preparedStatement.setString(1, student.getName());
+        preparedStatement.setString(2, student.getEmail());
+        preparedStatement.setInt(3, student.getAge());
+
+        int rowaffected = preparedStatement.executeUpdate();
+
+        if (rowaffected > 0) {
+            System.out.println("Successfully inserted " + student.getName());
+        }else {
+            System.out.println("Failed to insert " + student.getName());
         }
-        else {
-            System.out.println("Create Connection failed");
-        }
-        // System.out.println("Connected to database successfully");
+
+
+
+        //int result = statement.executeUpdate(sql);
+
+//        if (result == 1) {
+//            System.out.println("Create Connection successful");
+//        }
+//        else {
+//            System.out.println("Create Connection failed");
+//        }
+//        // System.out.println("Connected to database successfully");
 
         connection.close();
         }
@@ -39,23 +54,44 @@ public class StudentRepository {
             ex.printStackTrace();
 
         }
+//        finally {
+//            try{
+//                preparedStatement.close();
+//            }
+//            catch (SQLException ex){
+//                ex.printStackTrace();
+//            }
+//            try{
+//                connection.close();
+//            }
+//            catch (SQLException ex){
+//                ex.printStackTrace();
+//            }
+//        }
 
     }
 
-    public void updateUser(){
+    public void updateUser(Student student, Long id) {
 
-        try {
+        String sql = "UPDATE students SET name = ? , email = ?, age = ? WHERE id = ?";
 
-            Connection connection = DriverManager.getConnection(url, username, password);
+         // Try with resourses
+        try(Connection connection = DriverManager.getConnection(url, username, password);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+        {
 
-            Statement statement = connection.createStatement();
+            preparedStatement.setString(1, student.getName());
+            preparedStatement.setString(2, student.getEmail());
+            preparedStatement.setInt(3, student.getAge());
+            preparedStatement.setLong(4, id);
 
-            String sql = "UPDATE students SET age = 20 " +
-                    "WHERE id = 1";
 
-            int result = statement.executeUpdate(sql);
+           // Statement statement = connection.createStatement();
 
-            if (result == 1) {
+
+            int rowAffected = preparedStatement.executeUpdate();
+
+            if (rowAffected == 1) {
                 System.out.println("Update Operation successful");
             }
             else {
@@ -72,18 +108,23 @@ public class StudentRepository {
 
     }
 
-    public void deleteUser(){
-        try {
+    public void deleteUser(Long id) {
 
-            Connection connection = DriverManager.getConnection(url, username, password);
+        String sql = "DELETE FROM students WHERE id = ?";
+        try(Connection connection = DriverManager.getConnection(url, username, password);
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);) {
 
-            Statement statement = connection.createStatement();
 
-            String sql = "DELETE FROM students WHERE id = 1";
+            //Statement statement = connection.createStatement();
 
-            int result = statement.executeUpdate(sql);
+            preparedStatement.setLong(1, id);
 
-            if (result == 1) {
+
+
+
+            int rowAffected = preparedStatement.executeUpdate();
+
+            if (rowAffected == 1) {
                 System.out.println("Delete Operation successful");
             }
             else {
@@ -99,23 +140,31 @@ public class StudentRepository {
         }
     }
 
-    public void getUserById(){
-        try {
+    public void getUserById(Long id) {
 
-            Connection connection = DriverManager.getConnection(url, username, password);
+        String sql = "SELECT id, name, email, age FROM students WHERE id = ?";
 
-            Statement statement = connection.createStatement();
 
-            String sql = "SELECT id, name, email, age FROM students WHERE id = 2";
+        try(Connection connection = DriverManager.getConnection(url, username, password);
 
-            ResultSet result = statement.executeQuery(sql);
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(sql);){
 
-            result.next();
+            preparedStatement.setLong(1, id);
 
-            Student student = mapRow(result);
 
-            System.out.println(student);
 
+
+            try(ResultSet resultSet = preparedStatement.executeQuery();){
+
+                if(resultSet.next()){
+
+                    Student student = mapRow(resultSet);
+
+                    System.out.println(student);
+
+                }
+            }
             // System.out.println("Connected to database successfully");
 
             connection.close();
@@ -126,14 +175,30 @@ public class StudentRepository {
         }
     }
 
-    private Student mapRow(ResultSet result) throws SQLException {
-        Student student = new Student();
-        student.setId(result.getLong("id"));
-        student.setName(result.getString("name"));
-        student.setAge(result.getInt("age"));
-        student.setEmail(result.getString("email"));
+    public void getAllUsers() {
+        String sql = "SELECT id, name, email, age FROM students";
 
-        return student;
+        try(Connection connection = DriverManager.getConnection(url, username,password );
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);)
+
+        {
+            try(ResultSet resultSet = preparedStatement.executeQuery()){
+                List<Student> studentList = new ArrayList<>();
+
+                while (resultSet.next()){
+                    Student student = mapRow(resultSet);
+                    studentList.add(student);
+                    System.out.println(student);
+                }
+            }
+
+            }
+        catch (SQLException ex) {
+            ex.printStackTrace();
+
+
+
+        }
     }
 
     public void CompleteCrud() {
@@ -158,6 +223,16 @@ public class StudentRepository {
             ex.printStackTrace();
 
         }
+    }
+
+    private Student mapRow(ResultSet result) throws SQLException {
+        Student student = new Student();
+        student.setId(result.getLong("id"));
+        student.setName(result.getString("name"));
+        student.setAge(result.getInt("age"));
+        student.setEmail(result.getString("email"));
+
+        return student;
     }
 }
 
