@@ -5,6 +5,7 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/JDBCDemo/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringJDBCDemo/pom.xml" />
       </list>
     </option>
   </component>

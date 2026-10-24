@@ -15,7 +15,7 @@ public class Main {
 
         //studentRepository.createUser(new Student("Rohan", "anmoll@gmail.com", 19));
 
-        //studentRepository.updateUser(new Student("ROhan", "Rohit@gmail.com", 23), 4L);
+        //studentRepository.updateUser(new Student("Ro han", "Rohit@gmail.com", 23), 4L);
 
         //studentRepository.deleteUser(2L);
 
