@@ -95,7 +95,7 @@ public class StudentRepository {
                 System.out.println("Update Operation successful");
             }
             else {
-                System.out.println("Updation failed");
+                System.out.println("negation failed");
             }
             // System.out.println("Connected to database successfully");
 
