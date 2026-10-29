@@ -1,145 +1,102 @@
 package in.springBoot.SpringJDBCDemo.repository;
 
 import in.springBoot.SpringJDBCDemo.model.Student;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
 public class StudentRepository {
-    private static final String url = "jdbc:mysql://localhost:3306/springjdbc";
-    private static final String user = "root";
-    private static final String password = "root";
 
-    // Insert a student
+    private final JdbcTemplate jdbcTemplate;
 
-    public int save(Student student) {
-        String sql = "insert into student (name, email, age) " +
-                "values (?, ?, ?)";
+    //private StudentRowMapper studentRowMapper = new StudentRowMapper();
 
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+    private RowMapper<Student> rowMapper =
+            new BeanPropertyRowMapper<>(Student.class);
 
-            preparedStatement.setString(1, student.getName());
-            preparedStatement.setString(2, student.getEmail());
-            preparedStatement.setObject(3, student.getAge());
-            return preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Failed to save student: "
-                            + e.getMessage(), e);
-        }
+    public StudentRepository(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Find a student by ID
+    public void save(Student student) {
+        String sql = """
+                insert into student (name, email, age)
+                values (?, ?, ?)
+                """;
+
+        int rowAffected = jdbcTemplate.update(
+                sql,
+                student.getName(),
+                student.getEmail(),
+                student.getAge());
+        if (rowAffected == 1) {
+            System.out.println("Create Student Successfully");
+        } else {
+            System.out.println("Create Student failed");
+        }
+
+    }
 
     public Student findById(Long id) {
-        String sql = "select * from student where id = ?";
+        String sql = "select id, name, email, age from student where id = ?";
 
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        return jdbcTemplate.queryForObject(
+                sql,
+                rowMapper,
+                id);
 
-            preparedStatement.
-                    setLong(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
+    }
 
-            if (resultSet.next()) {
-                Student student = mapRowToStudent(resultSet);
-                return student;
-//                String name = resultSet.getString("name");
-//                String email = resultSet.getString("email");
-//                Integer age = resultSet.getInt("age");
-//                return new Student(id, name, email, age);
-            } else {
-                return null; // Student not found
-            }
+    public void update(Student student, Long id) {
+        String sql = """
+                update student
+                set name = ?, email = ?, age = ?
+                where id = ?
+                """;
 
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Failed to find student by ID: "
-                            + e.getMessage(), e);
+        int rowAffected = jdbcTemplate.update(
+                sql,
+                student.getName(),
+                student.getEmail(),
+                student.getAge(),
+                id);
+        if (rowAffected == 1) {
+            System.out.println("Update operation successful");
+        } else {
+            System.out.println("Updation failed");
         }
     }
 
-    // Update a student
-
-    public int update(Student student, Long id) {
-        String sql = "update student set name = ?, email = ?, age = ? where id = ?";
-
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            preparedStatement.setString(1, student.getName());
-            preparedStatement.setString(2, student.getEmail());
-            preparedStatement.setObject(3, student.getAge());
-            preparedStatement.setLong(4, student.getId());
-
-            return preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Failed to update student: "
-                            + e.getMessage(), e);
-        }
-    }
-
-    // Delete a student by ID
-
-    public int deleteById(Long id) {
+    public void deleteById(Long id) {
         String sql = "delete from student where id = ?";
 
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            preparedStatement.setLong(1, id);
-            return preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Failed to delete student by ID: "
-                            + e.getMessage(), e);
+        int rowAffected = jdbcTemplate.update(sql, id);
+        if (rowAffected == 1) {
+            System.out.println("Delete operation successful");
+        } else {
+            System.out.println("Deletion failed");
         }
     }
 
-    // Get all students
-
     public List<Student> findAll() {
-        String sql = "select * from student";
-        List<Student> students = new ArrayList<>();
+        String sql = "select id, name, email, age from student";
 
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                Student student = mapRowToStudent(resultSet);
-                students.add(student);
-            }
-
-        } catch (SQLException e) {
-            throw new RuntimeException(
-                    "Failed to retrieve all students: "
-                            + e.getMessage(), e);
-        }
+        List<Student> students = jdbcTemplate.query(
+                sql, rowMapper);
 
         return students;
     }
-
-    private Student mapRowToStudent(ResultSet resultSet) {
-        try {
-            return new Student(
-                    resultSet.getLong("id"),
-                    resultSet.getString("name"),
-                    resultSet.getString("email"),
-                    resultSet.getInt("age")
-            );
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to map row to student: " + e.getMessage(), e);
-        }
-    }
-
 }
+
+//    private Student mapRowToStudent(java.sql.ResultSet resultSet)
+//            throws java.sql.SQLException {
+//        return new Student(
+//                resultSet.getLong("id"),
+//                resultSet.getString("name"),
+//                resultSet.getString("email"),
+//                resultSet.getInt("age"));
+//    }
