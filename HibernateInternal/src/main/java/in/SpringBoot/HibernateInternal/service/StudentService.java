@@ -34,9 +34,16 @@ public class StudentService {
     public Student updateStudent(Long id, Student studentReq){
         Student student1 = studentRepository.findById(id);
 
+//        studentRepository.detach(student1);
+//
+//        student1 = studentRepository.attachAgain(student1);
+
         student1.setName(studentReq.getName());
+        studentRepository.flush();
         student1.setEmail(studentReq.getEmail());
+        studentRepository.flush();
         student1.setAge(studentReq.getAge());
+        studentRepository.flush();
         return student1;
 
     }
