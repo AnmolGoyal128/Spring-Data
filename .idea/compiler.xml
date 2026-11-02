@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="JDBCDemo" />
         <module name="SpringJDBCDemo" />
+        <module name="JpaRelationship" />
         <module name="Hibernate" />
         <module name="HibernateInternal" />
       </profile>
@@ -17,6 +18,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Hibernate" options="-parameters" />
       <module name="HibernateInternal" options="-parameters" />
+      <module name="JpaRelationship" options="-parameters" />
       <module name="SpringJDBCDemo" options="-parameters" />
     </option>
   </component>
