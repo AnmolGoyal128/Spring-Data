@@ -16,11 +16,19 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @PostMapping("/{deptid}")
+    @PostMapping
     public ResponseEntity<String> createStudent(@RequestBody Student student,
                                                 @RequestParam Long department_id) {
         // Implementation for creating a new student
         studentService.createStudent(student, department_id);
+        return ResponseEntity.ok("Student created successfully");
+    }
+
+    @PostMapping("/withDepartment")
+    public ResponseEntity<String> createStudent(@RequestBody Student student,
+                                                @RequestParam String deptName) {
+        // Implementation for creating a new student
+        studentService.createStudent(student, deptName);
         return ResponseEntity.ok("Student created successfully");
     }
 }
