@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 @Getter
 @Setter
@@ -18,7 +19,7 @@ public class Department {
     private Long id;
     private String name;
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL)
-    private List<Student> studentList;    // Unidirectional relation
+    private List<Student> studentList = new ArrayList<>();    // Unidirectional relation
 
 
     // private List<Student> studentList;    Bidirectional relation

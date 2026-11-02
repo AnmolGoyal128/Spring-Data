@@ -25,4 +25,13 @@ public class Student {
                 nullable = false
     )
     private Department department;
+
+//    private void addDepartment(Department department){
+//        this.department = department;
+//        this.department.getStudentList().add(this);
+//    }
+//    private void removeDepartment(Department department){
+//        this.department = null;
+//        this.department.remove(this);
+//    }
 }
