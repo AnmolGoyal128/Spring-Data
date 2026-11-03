@@ -13,12 +13,22 @@
         <module name="Hibernate" />
         <module name="HibernateInternal" />
       </profile>
+      <profile name="Annotation profile for JpaN-1problem" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+        </processorPath>
+        <module name="JpaN-1problem" />
+      </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="Hibernate" options="-parameters" />
       <module name="HibernateInternal" options="-parameters" />
+      <module name="JpaN-1problem" options="-parameters" />
       <module name="JpaRelationship" options="-parameters" />
       <module name="SpringJDBCDemo" options="-parameters" />
     </option>
