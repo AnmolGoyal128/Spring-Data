@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/HibernateInternal/pom.xml" />
         <option value="$PROJECT_DIR$/JpaRelationship/pom.xml" />
         <option value="$PROJECT_DIR$/JpaN-1problem/pom.xml" />
+        <option value="$PROJECT_DIR$/SpringJpa/pom.xml" />
       </list>
     </option>
   </component>
