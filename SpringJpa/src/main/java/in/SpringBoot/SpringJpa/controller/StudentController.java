@@ -5,6 +5,8 @@ import in.SpringBoot.SpringJpa.service.StudentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
@@ -22,6 +24,12 @@ public class StudentController {
     @GetMapping("{id}")
     public ResponseEntity<Student> getById(@PathVariable Long id) {
         Student student = studentService.fetchStudentById(id);
+        return ResponseEntity.ok(student);
+    }
+
+    @GetMapping("{name}")
+    public ResponseEntity<List<Student>> getById(@PathVariable String name) {
+        List<Student> student = studentService.fetchAllStudents(name);
         return ResponseEntity.ok(student);
     }
 }
